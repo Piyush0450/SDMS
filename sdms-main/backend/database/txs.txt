@@ -1,0 +1,34 @@
+4.1.1 Login API Testing
+
+The login API is responsible for authenticating users based on their credentials. The API was tested using valid faculty login details.
+
+🔸 API Details
+
+Method: POST
+
+URL: http://127.0.0.1:5000/api/auth/login/credentials
+
+Request Format: JSON
+
+🔸 Sample JSON Request (Input)
+{
+  "username": "F_003",
+  "password": "1980-05-20"
+}
+
+
+Figure 4.
+1: Login API Request using Postman (JSON Input)
+
+🔸 Sample JSON Response (Output)
+{
+  "email": "faculty3@school.edu",
+  "id": "F_003",
+  "ok": true,
+  "role": "faculty"
+}
+
+
+Status Code: 200 OK
+
+Figure 4.2: Login API Response using Postman (JSON Output)   add like this

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: sdms-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m scripts.ensure_admin && gunicorn "app:create_app()"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
