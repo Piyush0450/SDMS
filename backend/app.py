@@ -20,13 +20,23 @@ from database.seed import seed
 seed()
 
 # Initialize Firebase
+# Initialize Firebase
 try:
-    if os.path.exists("firebase/serviceAccountKey.json"):
+    # 1. Try Environment Variable (Render/Production)
+    firebase_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+    if firebase_json:
+        import json
+        cred_dict = json.loads(firebase_json)
+        cred = credentials.Certificate(cred_dict)
+        initialize_app(cred)
+        print("Firebase Initialized via Environment Variable")
+    # 2. Try Local File (Dev)
+    elif os.path.exists("firebase/serviceAccountKey.json"):
         cred = credentials.Certificate("firebase/serviceAccountKey.json")
         initialize_app(cred)
-        print("Firebase Initialized")
+        print("Firebase Initialized via Local File")
     else:
-        print("Warning: firebase/serviceAccountKey.json not found. Firebase Auth will fail.")
+        print("Warning: firebase/serviceAccountKey.json not found and FIREBASE_SERVICE_ACCOUNT_JSON not set. Firebase Auth will fail.")
 except Exception as e:
     print(f"Failed to initialize Firebase: {e}")
 
