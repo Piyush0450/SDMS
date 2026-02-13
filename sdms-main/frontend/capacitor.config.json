@@ -1,9 +1,0 @@
-{
-    "appId": "com.piyush.sdms",
-    "appName": "SDMS",
-    "webDir": "dist",
-    "server": {
-        "url": "https://sdmsapp.netlify.app",
-        "cleartext": true
-    }
-}
