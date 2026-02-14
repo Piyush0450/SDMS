@@ -6,7 +6,15 @@ import os
 
 # Initialize Flask
 app = Flask(__name__)
-CORS(app)
+# Explicitly allow all origins for all routes
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 # Initialize Database Tables
 Base.metadata.create_all(bind=engine)
