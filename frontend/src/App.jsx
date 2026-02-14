@@ -215,13 +215,11 @@ const AuthPanel = ({ onLoggedIn, onHomeClick }) => {
       const token = await user.getIdToken();
 
       // Verify with backend
-      const res = await fetch('/api/auth/login', {
+      const data = await fetcher('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
       });
-
-      const data = await res.json();
 
       if (data.ok) {
         toast.success(`Welcome back, ${data.email}!`);
@@ -249,13 +247,11 @@ const AuthPanel = ({ onLoggedIn, onHomeClick }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login/credentials', {
+      const data = await fetcher('/api/auth/login/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: uid, password: dob }) // Backend expects username/password
       });
-
-      const data = await res.json();
 
       if (data.ok) {
         toast.success(`Welcome back!`);
@@ -392,12 +388,11 @@ const AuthPanel = ({ onLoggedIn, onHomeClick }) => {
                   const payload = btoa(JSON.stringify({ email: "piyushchaurasiya348@gmail.com" })); // Auto-admin
                   const token = `${header}.${payload}.`;
 
-                  fetch('/api/auth/login', {
+                  fetcher('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token })
                   })
-                    .then(res => res.json())
                     .then(data => {
                       if (data.ok) {
                         toast.success(`DEV LOGIN: Welcome ${data.email}`);
@@ -700,6 +695,8 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 async function fetcher(url, options = {}) {
   try {
     // Get the current user token if available
@@ -712,7 +709,9 @@ async function fetcher(url, options = {}) {
       };
     }
 
-    const res = await fetch(url, options);
+    // Prepend API_BASE to the URL
+    const fullUrl = `${API_BASE}${url}`;
+    const res = await fetch(fullUrl, options);
     const contentType = res.headers.get("content-type");
 
     if (res.status === 401 || res.status === 403) {
