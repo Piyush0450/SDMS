@@ -4,7 +4,7 @@ This runs on every deployment to ensure the admin user exists.
 """
 import os
 from database.connection import Base, engine, SessionLocal
-from models.user import User, Admin
+from models.models import Admin
 from sqlalchemy import select, text
 
 def ensure_admin_user():
@@ -16,7 +16,7 @@ def ensure_admin_user():
         with SessionLocal() as db:
             # Check if super admin user already exists
             existing_user = db.scalars(
-                select(User).where(User.email == "piyushchaurasiya348@gmail.com")
+                select(Admin).where(Admin.email == "piyushchaurasiya348@gmail.com")
             ).first()
             
             if existing_user:
