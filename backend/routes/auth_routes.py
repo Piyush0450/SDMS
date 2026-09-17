@@ -46,11 +46,21 @@ def login_firebase():
                 return jsonify({'ok': False, 'error': 'Your account has been blocked. Contact the administrator.'}), 403
 
             # Return session info
+            user_role = 'super_admin' if role == 'admin' and getattr(user, 'admin_type', None) == 'super' else role
+            auth_token = jwt.encode({
+                'email': user.email,
+                'uid': user.u_id,
+                'role': user_role,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
+            }, SECRET_KEY, algorithm='HS256')
+
             return jsonify({
                 'ok': True,
-                'role': 'super_admin' if role == 'admin' and user.admin_type == 'super' else role,
+                'role': user_role,
                 'id': user.u_id,
-                'email': user.email
+                'email': user.email,
+                'name': user.name,
+                'token': auth_token
             })
 
     except Exception as e:
@@ -82,9 +92,20 @@ def login_credentials():
         if hasattr(user, 'status') and user.status in ['blocked', 'suspended']:
             return jsonify({'ok': False, 'error': 'Your account has been blocked. Contact the administrator.'}), 403
         
+        user_role = 'super_admin' if role == 'admin' and getattr(user, 'admin_type', None) == 'super' else role
+        auth_token = jwt.encode({
+            'email': user.email,
+            'uid': user.u_id,
+            'role': user_role,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        }, SECRET_KEY, algorithm='HS256')
+
         return jsonify({
             'ok': True,
-            'role': 'super_admin' if role == 'admin' and user.admin_type == 'super' else role,
+            'role': user_role,
             'id': user.u_id,
-            'email': user.email
+            'email': user.email,
+            'name': user.name,
+            'token': auth_token
         })
+

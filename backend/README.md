@@ -13,6 +13,16 @@ To seed Super Admin (A_001 / superadmin / password: 01/01/1980):
 - Start the server once (to create tables).
 - Then open SQLite DB `backend/database/sdms.sqlite3` and run `database/seed.sql` (or use your favorite tool).
 
+## Database Seeding (Dummy Data)
+```bash
+# Reset and seed dummy data (wipes then reseeds all tables)
+python -m database.seed_dummy --reset
+
+# Add dummy data without wiping existing records
+python -m database.seed_dummy
+```
+
+
 ## Endpoints (sample)
 - POST `/api/auth/login` { role, id, password }
 - GET `/api/admin/faculty`, POST `/api/admin/faculty`

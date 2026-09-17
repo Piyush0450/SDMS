@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const IS_DEBUG = import.meta.env.VITE_DEBUG_AUTH === "true";
 
 export async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
@@ -6,8 +7,9 @@ export async function apiFetch(endpoint, options = {}) {
     "Content-Type": "application/json",
   };
 
-  // Attach token from sessionStorage if present
-  const session = JSON.parse(sessionStorage.getItem("sdms_session") || "null");
+  // Attach token from localStorage (or fallback to sessionStorage) if present
+  const sessionStr = localStorage.getItem("sdms_session") || sessionStorage.getItem("sdms_session");
+  const session = JSON.parse(sessionStr || "null");
   if (session?.token) {
     defaultHeaders["Authorization"] = `Bearer ${session.token}`;
   }
@@ -20,12 +22,25 @@ export async function apiFetch(endpoint, options = {}) {
     },
   };
 
+  const rawBody = config.body;
   if (config.body && typeof config.body === "object" && !(config.body instanceof FormData)) {
     config.body = JSON.stringify(config.body);
   }
 
+  if (IS_DEBUG) {
+    console.log(`[AUTH DEBUG] Calling API: ${config.method || "GET"} ${url}`, {
+      headers: config.headers,
+      body: rawBody,
+      session,
+    });
+  }
+
   const response = await fetch(url, config);
   const data = await response.json().catch(() => ({}));
+
+  if (IS_DEBUG) {
+    console.log(`[AUTH DEBUG] API Response (${response.status}):`, data);
+  }
 
   if (!response.ok) {
     throw new Error(data.error || data.message || `Request failed with status ${response.status}`);
@@ -40,3 +55,4 @@ export const api = {
   put: (endpoint, body) => apiFetch(endpoint, { method: "PUT", body }),
   delete: (endpoint) => apiFetch(endpoint, { method: "DELETE" }),
 };
+
